@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Loading from "@/app/loading";
 import css from "./NoteDetails.module.css";
 import ErrorNote from "./error";
-import { fetchNoteById } from "@/lib/api/api";
+import { fetchNoteById } from "@/lib/api/clientApi";
 
 const NoteDetailsClient = () => {
   const { id } = useParams<{ id: string }>();

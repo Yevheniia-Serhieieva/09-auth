@@ -1,5 +1,6 @@
 import { User } from "@/types/user";
-import { nextServer } from "./api";
+import { NewNoteData, nextServer } from "./api";
+import { Note } from "@/types/note";
 
 export type RegisterRequest = {
   email: string;
@@ -20,6 +21,11 @@ export type UpdateUserRequest = {
   username: string;
 };
 
+interface NoteListResponse {
+  notes: Note[];
+  totalPages: number;
+}
+
 export const register = async (data: RegisterRequest) => {
   const res = await nextServer.post<User>("/auth/register", data);
   return res.data;
@@ -38,7 +44,7 @@ export const checkSession = async () => {
 };
 
 export const getMe = async () => {
-  const { data } = await nextServer.get<User>("/auth/me");
+  const { data } = await nextServer.get<User>("/users/me");
   return data;
 };
 
@@ -47,10 +53,64 @@ export const logout = async (): Promise<void> => {
 };
 
 export const updateMe = async (data: UpdateUserRequest): Promise<User> => {
-  const { data: updatedUser } = await nextServer.patch<User>("/auth/me", data, {
+  const { data: updatedUser } = await nextServer.patch<User>(
+    "/users/me",
+    data,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return updatedUser;
+};
+
+export const getNotes = async (
+  page: number = 1,
+  perPage: number = 12,
+  search?: string,
+  tag?: string
+): Promise<NoteListResponse> => {
+  const response = await nextServer.get<NoteListResponse>(`/notes`, {
+    params: {
+      page,
+      perPage,
+      ...(search ? { search } : {}),
+      ...(tag && tag !== "all" ? { tag } : {}),
+    },
+    headers: {
+      accept: "application/json",
+    },
+  });
+
+  return response.data;
+};
+
+export const fetchNoteById = async (id: string): Promise<Note> => {
+  const response = await nextServer.get<Note>(`/notes/${id}`, {
+    headers: {
+      accept: "application/json",
+    },
+  });
+  return response.data;
+};
+
+export const createNote = async (note: NewNoteData) => {
+  const response = await nextServer.post<Note>(`/notes`, note, {
     headers: {
       "Content-Type": "application/json",
     },
   });
-  return updatedUser;
+
+  return response.data;
+};
+
+export const deleteNote = async (id: string): Promise<Note> => {
+  const response = await nextServer.delete<Note>(`/notes/${id}`, {
+    headers: {
+      accept: "application/json",
+    },
+  });
+
+  return response.data;
 };

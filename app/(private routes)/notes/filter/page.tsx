@@ -1,5 +1,5 @@
 import NoteList from "@/components/NoteList/NoteList";
-import { getNotes } from "@/lib/api/api";
+import { getNotes } from "@/lib/api/clientApi";
 import { Note } from "@/types/note";
 
 export default async function AllNotesPaage() {
