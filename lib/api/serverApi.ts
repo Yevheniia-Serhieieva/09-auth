@@ -3,6 +3,7 @@ import { User } from "@/types/user";
 import { nextServer } from "./api";
 import { Note } from "@/types/note";
 import { AxiosError } from "axios";
+import { NoteListResponse } from "./clientApi";
 
 export const checkServerSession = async () => {
   const cookieStore = await cookies();
@@ -41,4 +42,34 @@ export const getServerNoteById = async (id: string): Promise<Note | null> => {
     }
     throw err;
   }
+};
+
+export const getNotes = async (
+  page: number = 1,
+  perPage: number = 12,
+  search?: string,
+  tag?: string
+): Promise<NoteListResponse> => {
+  const response = await nextServer.get<NoteListResponse>(`/notes`, {
+    params: {
+      page,
+      perPage,
+      ...(search ? { search } : {}),
+      ...(tag && tag !== "all" ? { tag } : {}),
+    },
+    headers: {
+      accept: "application/json",
+    },
+  });
+
+  return response.data;
+};
+
+export const fetchNoteById = async (id: string): Promise<Note> => {
+  const response = await nextServer.get<Note>(`/notes/${id}`, {
+    headers: {
+      accept: "application/json",
+    },
+  });
+  return response.data;
 };

@@ -5,7 +5,7 @@ import { Note } from "@/types/note";
 export type RegisterRequest = {
   email: string;
   password: string;
-  userName: string;
+  username: string;
 };
 
 export type LoginRequest = {
@@ -21,7 +21,7 @@ export type UpdateUserRequest = {
   username: string;
 };
 
-interface NoteListResponse {
+export interface NoteListResponse {
   notes: Note[];
   totalPages: number;
 }
